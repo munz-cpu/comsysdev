@@ -16,6 +16,7 @@ public sealed class PracticeTerminal : MonoBehaviour
     private readonly List<string> history = new List<string>();
     private Exercise[] bank;
     private Exercise current;
+    private bool singleQuestion;
     private int step, lastId;
     private string directory = "~", previous;
     private bool focusPending, scrollPending;
@@ -25,7 +26,7 @@ public sealed class PracticeTerminal : MonoBehaviour
     {
         bank = JsonUtility.FromJson<ExerciseBank>(exercises.text).questions;
         commandLine.onSubmit.AddListener(OnSubmit);
-        Write("Ubuntu 명령어 수행평가\n\nstart 를 입력하고 Enter를 눌러 연습을 시작하세요.\n총 " + bank.Length + "문제 · 답안은 한 줄씩 입력하세요.");
+        Write("Ubuntu 명령어 수행평가\n\nstart 로 무작위 연습을 시작하거나 solve 12 처럼 입력해 원하는 문제를 풀어보세요.\n총 " + bank.Length + "문제 · 답안은 한 줄씩 입력하세요.");
         UpdatePrompt();
         focusPending = true;
     }
@@ -63,16 +64,20 @@ public sealed class PracticeTerminal : MonoBehaviour
         if (line.Length == 0) return;
         bool secret = current != null && current.id == 33 && step > 0;
         Write(location.text + " " + (secret ? "*********" : value));
+        string[] command = line.Split((char[])null, 2, StringSplitOptions.RemoveEmptyEntries);
+        if (command[0] == "solve")
+        {
+            SelectQuestion(command);
+            return;
+        }
         switch (line)
         {
             case "start":
                 if (current == null) Next(); else Write("연습 중입니다. 현재 문제의 답안을 입력하세요.");
                 return;
             case "stop":
-                current = null;
-                directory = "~";
-                UpdatePrompt();
-                Write("연습을 멈췄습니다. start 로 다시 시작하세요.");
+                EndPractice();
+                Write("연습을 멈췄습니다. start 또는 solve <문제 번호>로 다시 시작하세요.");
                 return;
             case "status":
                 ShowStats();
@@ -80,15 +85,15 @@ public sealed class PracticeTerminal : MonoBehaviour
                 return;
             case "giveup":
             case "next":
-                if (current == null) { Write("start 로 먼저 연습을 시작하세요."); return; }
+                if (current == null) { Write("start 또는 solve <문제 번호>로 먼저 연습을 시작하세요."); return; }
                 Count("skip");
                 var solution = new StringBuilder("예시 답안");
                 for (int i = 0; i < current.steps.Length; i++) solution.Append("\n  " + current.Example(i));
                 Write(solution.ToString());
-                Next();
+                FinishQuestion();
                 return;
         }
-        if (current == null) { Write("start 로 연습을 시작하거나 status 로 통계를 확인하세요."); return; }
+        if (current == null) { Write("start 로 무작위 연습, solve <문제 번호>로 문제 선택, status 로 통계를 확인할 수 있습니다."); return; }
         if (!current.Accepts(step, value, directory, previous))
         {
             Count("wrong");
@@ -103,13 +108,48 @@ public sealed class PracticeTerminal : MonoBehaviour
             Count("correct");
             Write("정답 · " + current.id.ToString("00") + "번 완료");
             if (current.id == 49) Write("-rw-r--r-- 1 student student 0 … testfile\n일반 파일(-) · 소유자 student는 읽기/쓰기 · 그룹 student와 기타 사용자는 읽기 (umask 022 예시)");
-            Next();
+            FinishQuestion();
         }
         else
         {
             UpdatePrompt();
             Write(StepHint());
         }
+    }
+
+    private void SelectQuestion(string[] command)
+    {
+        if (command.Length != 2 || !int.TryParse(command[1], out int id))
+        {
+            Write("사용법 · solve <문제 번호> (예: solve 12)");
+            return;
+        }
+        Exercise question = Array.Find(bank, item => item.id == id);
+        if (question == null)
+        {
+            Write(id + "번 문제는 없습니다. status 로 문제 번호를 확인하세요.");
+            return;
+        }
+        BeginQuestion(question, single: true);
+    }
+
+    private void FinishQuestion()
+    {
+        if (!singleQuestion)
+        {
+            Next();
+            return;
+        }
+        EndPractice();
+        Write("solve <문제 번호>로 다른 문제를 선택하거나 start 로 무작위 연습을 이어가세요.");
+    }
+
+    private void EndPractice()
+    {
+        current = null;
+        singleQuestion = false;
+        directory = "~";
+        UpdatePrompt();
     }
 
     private string StepHint()
@@ -136,9 +176,16 @@ public sealed class PracticeTerminal : MonoBehaviour
                 (deck[0],deck[end]) = (deck[end],deck[0]);
         }
         int top = deck.Count - 1;
-        current = bank[deck[top]];
+        Exercise question = bank[deck[top]];
         deck.RemoveAt(top);
-        lastId = current.id;
+        lastId = question.id;
+        BeginQuestion(question, single: false);
+    }
+
+    private void BeginQuestion(Exercise question, bool single)
+    {
+        current = question;
+        singleQuestion = single;
         step = 0;
         previous = "";
         directory = current.cwd;
