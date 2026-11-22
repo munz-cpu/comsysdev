@@ -1,0 +1,665 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "prompt": "현재 작업 중인 디렉터리의 절대 경로를 화면에 출력하시오.",
+      "cwd": "~",
+      "steps": [
+        "pwd"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "최상위 디렉터리(/)로 이동한 후 현재 위치를 출력하시오.",
+      "cwd": "~",
+      "steps": [
+        "cd /",
+        "pwd"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "사용자의 홈 디렉터리(~)로 이동한 후 현재 위치를 출력하시오.",
+      "cwd": "~",
+      "steps": [
+        "cd ~|cd",
+        "pwd"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "현재 디렉터리 내의 숨김 파일과 숨김 디렉터리를 포함하여 모든 파일의 이름만 목록으로 출력하시오.",
+      "cwd": "~",
+      "steps": [
+        "ls -a|ls -a1"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "현재 디렉터리의 파일 및 디렉터리 목록을 권한, 소유자, 용량, 수정 날짜 등이 포함되도록 상세히 출력하시오.",
+      "cwd": "~",
+      "steps": [
+        "ls -l"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "현재 디렉터리의 숨김 파일까지 포함한 상세 목록을 알파벳 역순으로 정렬하여 출력하시오.",
+      "cwd": "~",
+      "steps": [
+        "ls -alr"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "홈 디렉터리에 company 디렉터리를 생성하시오.",
+      "cwd": "~",
+      "steps": [
+        "mkdir ~/company"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "company 디렉터리 내부에 docs 디렉터리와 trash 디렉터리를 동시에 생성하시오.",
+      "cwd": "~",
+      "steps": [
+        "mkdir ~/company/docs ~/company/trash|mkdir ~/company/{docs,trash}"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "홈 디렉터리에 dir_A를 생성하고, dir_A 안에 dir_B 디렉터리를 연속(하위 포함)으로 생성하시오.",
+      "cwd": "~",
+      "steps": [
+        "mkdir -p ~/dir_A/dir_B"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "company/docs 디렉터리 안에 빈 파일 report.txt를 생성하시오.",
+      "cwd": "~",
+      "steps": [
+        "touch ~/company/docs/report.txt"
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "company/docs 디렉터리 안으로 이동하여 빈 파일 index.html과 style.css를 동시에 생성하시오.",
+      "cwd": "~",
+      "steps": [
+        "cd ~/company/docs",
+        "touch index.html style.css|touch style.css index.html"
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "style.css 파일의 이름을 main.css로 변경하시오.",
+      "cwd": "~/company/docs",
+      "steps": [
+        "mv style.css main.css"
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "company/docs/index.html 파일을 상위 디렉터리로 복사하시오.",
+      "cwd": "~/company/docs",
+      "steps": [
+        "cp index.html ..|cp index.html ../index.html"
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "company/docs/report.txt 파일을 company/trash 디렉터리로 이동시키시오.",
+      "cwd": "~/company/docs",
+      "steps": [
+        "mv report.txt ../trash|mv report.txt ../trash/report.txt"
+      ]
+    },
+    {
+      "id": 15,
+      "prompt": "company/docs 디렉터리 안에 temp_folder라는 빈 디렉터리를 만든 후, 빈 디렉터리 전용 삭제 명령어로 삭제하시오.",
+      "cwd": "~/company/docs",
+      "steps": [
+        "mkdir temp_folder",
+        "rmdir temp_folder"
+      ]
+    },
+    {
+      "id": 16,
+      "prompt": "company/trash 디렉터리와 그 내부의 모든 파일/하위 디렉터리를 강제로 한 번에 삭제하시오.",
+      "cwd": "~/company/docs",
+      "steps": [
+        "rm -rf ../trash"
+      ]
+    },
+    {
+      "id": 17,
+      "prompt": "dir_A 디렉터리를 하위 디렉터리까지 포함하여 한 번에 삭제하시오.",
+      "cwd": "~",
+      "steps": [
+        "rm -r ~/dir_A|rm -rf ~/dir_A"
+      ]
+    },
+    {
+      "id": 18,
+      "prompt": "pwd 명령어의 사용법과 설명이 담긴 도움말(매뉴얼) 페이지를 확인하시오.",
+      "cwd": "~",
+      "steps": [
+        "man pwd"
+      ]
+    },
+    {
+      "id": 19,
+      "prompt": "pwd 명령어의 간단한 도움말 옵션(--help)을 사용하여 실행 가능한 옵션을 확인하시오.",
+      "cwd": "~",
+      "steps": [
+        "/usr/bin/pwd --help|/bin/pwd --help|pwd --help|env pwd --help"
+      ]
+    },
+    {
+      "id": 20,
+      "prompt": "cat 명령어와 리다이렉션(>) 기호를 사용하여 file1을 생성하고 아무 내용이나 5줄 내용을 입력한 후 저장(Ctrl + C)하시오.",
+      "cwd": "~",
+      "steps": [
+        "cat > file1",
+        "{text}",
+        "{text}",
+        "{text}",
+        "{text}",
+        "{text}",
+        "{end}"
+      ]
+    },
+    {
+      "id": 21,
+      "prompt": "file1 파일의 내용을 화면에 출력하시오.",
+      "cwd": "~",
+      "steps": [
+        "cat file1"
+      ]
+    },
+    {
+      "id": 22,
+      "prompt": "cat 명령어와 리다이렉션(>>) 기호를 사용하여 file1에 두 줄 내용을 더 추가하여 저장하시오.",
+      "cwd": "~",
+      "steps": [
+        "cat >> file1",
+        "{text}",
+        "{text}",
+        "{end}"
+      ]
+    },
+    {
+      "id": 23,
+      "prompt": "file1에서 앞에서 두줄만 출력하시오.",
+      "cwd": "~",
+      "steps": [
+        "head -n 2 file1|head -2 file1"
+      ]
+    },
+    {
+      "id": 24,
+      "prompt": "file1에서 뒤에서 두줄만 출력하시오.",
+      "cwd": "~",
+      "steps": [
+        "tail -n 2 file1|tail -2 file1"
+      ]
+    },
+    {
+      "id": 25,
+      "prompt": "현재 디렉터리의 파일 목록(ls) 출력 결과를 file_list라는 파일에 리다이렉션(>) 기호를 사용하여 저장하시오.",
+      "cwd": "~",
+      "steps": [
+        "ls > file_list"
+      ]
+    },
+    {
+      "id": 26,
+      "prompt": "file_list 파일의 상위 3줄만 화면에 출력하시오.",
+      "cwd": "~",
+      "steps": [
+        "head -n 3 file_list|head -3 file_list"
+      ]
+    },
+    {
+      "id": 27,
+      "prompt": "file_list 파일의 하위 3줄만 화면에 출력하시오.",
+      "cwd": "~",
+      "steps": [
+        "tail -n 3 file_list|tail -3 file_list"
+      ]
+    },
+    {
+      "id": 28,
+      "prompt": "현재 로그인되어 있는 계정의 이름을 확인하시오.",
+      "cwd": "~",
+      "steps": [
+        "whoami|id -un"
+      ]
+    },
+    {
+      "id": 29,
+      "prompt": "일반 사용자 계정에서 루트 관리자 권한을 일시적으로 행사하기 위한 명령어 키워드를 적으시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo"
+      ]
+    },
+    {
+      "id": 30,
+      "prompt": "루트 관리자 계정(세션)으로 완전 전환(sudo -i)한 후, 다시 일반 사용자 계정으로 돌아오기 위한 명령어를 입력하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo -i",
+        "exit|logout"
+      ]
+    },
+    {
+      "id": 31,
+      "prompt": "슈퍼유저 권한으로 student1이라는 사용자 계정을 새로 생성하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo useradd -m student1|sudo adduser student1"
+      ]
+    },
+    {
+      "id": 32,
+      "prompt": "사용자 계정 생성 시 계정 정보가 기록되는 시스템 설정 파일인 /etc/passwd 파일의 마지막 2줄을 확인하시오.",
+      "cwd": "~",
+      "steps": [
+        "tail -n 2 /etc/passwd|tail -2 /etc/passwd"
+      ]
+    },
+    {
+      "id": 33,
+      "prompt": "student1 계정의 비밀번호를 123abc@#$ 로 변경하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo passwd student1",
+        "123abc@#$",
+        "123abc@#$"
+      ]
+    },
+    {
+      "id": 34,
+      "prompt": "일반 사용자 계정 환경에서 자기 자신의 비밀번호를 변경할 때 사용하는 기본 명령어를 적으시오.",
+      "cwd": "~",
+      "steps": [
+        "passwd"
+      ]
+    },
+    {
+      "id": 35,
+      "prompt": "암호화된 사용자 비밀번호 해시값이 저장된 /etc/shadow 파일의 내용을 관리자 권한으로 조회하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo less /etc/shadow|sudo cat /etc/shadow"
+      ]
+    },
+    {
+      "id": 36,
+      "prompt": "student1 계정을 삭제하되, 해당 사용자의 홈 디렉터리(/home/student1)는 시스템에 남겨두도록 삭제하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo userdel student1|sudo deluser student1"
+      ]
+    },
+    {
+      "id": 37,
+      "prompt": "teacher1이라는 사용자 계정을 생성하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo useradd -m teacher1|sudo adduser teacher1"
+      ]
+    },
+    {
+      "id": 38,
+      "prompt": "teacher1 계정과 해당 계정의 홈 디렉터리까지 완전히 한 번에 삭제하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo userdel -r teacher1|sudo deluser --remove-home teacher1"
+      ]
+    },
+    {
+      "id": 39,
+      "prompt": "프로젝트 진행을 위해 project_106이라는 새로운 그룹 계정을 생성하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo groupadd project_106|sudo addgroup project_106"
+      ]
+    },
+    {
+      "id": 40,
+      "prompt": "시스템 전체 그룹 정보가 저장된 설정 파일 /etc/group 파일의 내용을 출력하시오.",
+      "cwd": "~",
+      "steps": [
+        "cat /etc/group"
+      ]
+    },
+    {
+      "id": 41,
+      "prompt": "project_106 그룹에 user10601 사용자를 보조 그룹 멤버로 추가하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo usermod -aG project_106 user10601|sudo gpasswd -a user10601 project_106|sudo adduser user10601 project_106"
+      ]
+    },
+    {
+      "id": 42,
+      "prompt": "project_106 그룹에 user10602 사용자를 보조 그룹 멤버로 추가하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo usermod -aG project_106 user10602|sudo gpasswd -a user10602 project_106|sudo adduser user10602 project_106"
+      ]
+    },
+    {
+      "id": 43,
+      "prompt": "project_106 그룹에서 user10602 사용자를 제어/삭제하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo gpasswd -d user10602 project_106|sudo deluser user10602 project_106"
+      ]
+    },
+    {
+      "id": 44,
+      "prompt": "사용하지 않는 project_106 그룹 계정을 삭제하시오. (단, 그룹 내 소속 사용자가 없어야 함)",
+      "cwd": "~",
+      "steps": [
+        "sudo groupdel project_106|sudo delgroup project_106"
+      ]
+    },
+    {
+      "id": 45,
+      "prompt": "user10601 계정의 사용자 ID(UID), 기본 그룹 ID(GID), 속한 보조 그룹 목록을 숫자로 상세 확인하시오.",
+      "cwd": "~",
+      "steps": [
+        "id user10601"
+      ]
+    },
+    {
+      "id": 46,
+      "prompt": "user10601 계정이 속한 그룹 이름 목록을 확인하시오.",
+      "cwd": "~",
+      "steps": [
+        "groups user10601|id -Gn user10601"
+      ]
+    },
+    {
+      "id": 47,
+      "prompt": "user10601 사용자의 기본 그룹(Primary Group)을 test_group으로 변경하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo usermod -g test_group user10601"
+      ]
+    },
+    {
+      "id": 48,
+      "prompt": "user10601 계정으로 전환/로그인(sudo login user10601)하여 사용자를 확인한 후 완전히 로그아웃(logout) 하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo login user10601|sudo -iu user10601",
+        "whoami|id -un",
+        "logout|exit"
+      ]
+    },
+    {
+      "id": 49,
+      "prompt": "홈 디렉터리에 빈 파일 testfile을 생성하고, 상세 정보(ls -l)를 확인하여 파일 유형과 허가권(Permission), 소유권을 분석하시오.",
+      "cwd": "~",
+      "steps": [
+        "touch ~/testfile",
+        "ls -l ~/testfile"
+      ]
+    },
+    {
+      "id": 50,
+      "prompt": "기호 모드(Symbolic Mode)를 사용하여 testfile의 소유자(u)에게 실행(x) 권한을 추가하시오.",
+      "cwd": "~",
+      "steps": [
+        "chmod u+x ~/testfile"
+      ]
+    },
+    {
+      "id": 51,
+      "prompt": "기호 모드를 사용하여 testfile의 그룹(g)에서 쓰기(w) 권한을 제거하시오.",
+      "cwd": "~",
+      "steps": [
+        "chmod g-w ~/testfile"
+      ]
+    },
+    {
+      "id": 52,
+      "prompt": "기호 모드를 사용하여 testfile의 소유자(u)와 소유 그룹(g)에 동시 읽기, 쓰기, 실행(rwx) 권한을 설정하시오.",
+      "cwd": "~",
+      "steps": [
+        "chmod ug=rwx ~/testfile|chmod gu=rwx ~/testfile"
+      ]
+    },
+    {
+      "id": 53,
+      "prompt": "숫자 모드(Octal Mode)를 사용하여 testfile의 허가권을 기본 권한 상태인 rw-rw-r-- (664)로 변경하시오.",
+      "cwd": "~",
+      "steps": [
+        "chmod 664 ~/testfile|chmod 0664 ~/testfile"
+      ]
+    },
+    {
+      "id": 54,
+      "prompt": "숫자 모드를 사용하여 testfile의 허가권을 소유자 및 그룹에게 모든 권한(rwx), 기타 사용자에게 읽기 권한(r--)을 주는 774로 변경하시오.",
+      "cwd": "~",
+      "steps": [
+        "chmod 774 ~/testfile|chmod 0774 ~/testfile"
+      ]
+    },
+    {
+      "id": 55,
+      "prompt": "관리자 권한으로 testfile의 소유자를 test_user로 변경하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo chown test_user ~/testfile"
+      ]
+    },
+    {
+      "id": 56,
+      "prompt": "관리자 권한으로 testfile의 소유 그룹을 test_group으로 변경하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo chgrp test_group ~/testfile|sudo chown :test_group ~/testfile"
+      ]
+    },
+    {
+      "id": 57,
+      "prompt": "기존 student1 사용자 홈 디렉터리(/home/student1) 및 하위 파일 전체의 소유자와 소유 그룹을 teacher1로 하위 경로까지 일괄(-R) 변경하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo chown -R teacher1:teacher1 /home/student1"
+      ]
+    },
+    {
+      "id": 58,
+      "prompt": "새로운 패키지를 설치하기 전, 저장소(Repository)의 최신 패키지 목록 정보를 가져오고자 한다. 실제 패키지를 업그레이드하지 않고 목록 메타데이터만 갱신하는 명령어를 작성하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo apt update|sudo apt-get update"
+      ]
+    },
+    {
+      "id": 59,
+      "prompt": "vim 패키지(텍스트 에디터)를 설치하려고 한다. 설치 과정 중 나오는 디스크 용량 확인 질문([Y/n])에 자동으로 'Yes'로 응답하도록 옵션을 부여하여 한 줄 명령어로 작성하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo apt install -y vim|sudo apt -y install vim|sudo apt install vim -y"
+      ]
+    },
+    {
+      "id": 60,
+      "prompt": "시스템을 변경하거나 패키지를 설치하지 않고, 저장소에 등록된 nginx 패키지(웹서버 프로그램)의 버전, 용량, 설명 등의 상세 정보만 확인하는 명령어를 작성하시오.",
+      "cwd": "~",
+      "steps": [
+        "apt show nginx|apt-cache show nginx"
+      ]
+    },
+    {
+      "id": 61,
+      "prompt": "더 이상 사용하지 않는 nginx 패키지를 삭제하려고 합니다. 프로그램 실행 파일뿐만 아니라 환경 설정 파일까지 시스템에서 완전히 제거하는 명령어를 작성하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo apt purge nginx|sudo apt remove --purge nginx"
+      ]
+    },
+    {
+      "id": 62,
+      "prompt": "주요 패키지들을 삭제하고 난 뒤, 다른 패키지에서 더 이상 사용되지 않는 불필요한 의존성 패키지(찌꺼기 파일)들을 일괄 자동 삭제하는 명령어를 작성하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo apt autoremove|sudo apt autoremove -y"
+      ]
+    },
+    {
+      "id": 63,
+      "prompt": "vim 패키지가 정상적으로 동작하기 위해 선택적으로 필요하거나 사전에 반드시 설치되어야 하는 연관 의존성 패키지 목록을 확인하는 명령어를 작성하시오.",
+      "cwd": "~",
+      "steps": [
+        "apt depends vim|apt-cache depends vim"
+      ]
+    },
+    {
+      "id": 64,
+      "prompt": "시스템에 설치되어 있는 모든 패키지를 최신 버전으로 안전하게 일괄 업데이트(업그레이드)하려고 한다. 이때 실행해야 하는 명령어를 작성하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo apt upgrade"
+      ]
+    },
+    {
+      "id": 65,
+      "prompt": "관리자가 현재 로그인된 사용자들에게 안내 후 5분 뒤에 시스템을 안전하게 종료하도록 예약하려 한다. 올바른 명령어를 작성하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo shutdown -h +5|sudo shutdown +5|sudo shutdown -P +5"
+      ]
+    },
+    {
+      "id": 66,
+      "prompt": "앞서 5분 뒤로 예약해 둔 시스템 종료 명령을 취소하고자 한다. 올바른 명령어를 작성하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo shutdown -c"
+      ]
+    },
+    {
+      "id": 67,
+      "prompt": "변경된 시스템 설정을 적용하기 위해 시스템을 즉시 재부팅하려고 한다. 실행 가능한 명령어 2가지를 작성하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo reboot|sudo shutdown -r now|sudo systemctl reboot",
+        "sudo shutdown -r now|sudo reboot|sudo systemctl reboot"
+      ]
+    },
+    {
+      "id": 68,
+      "prompt": "일반 사용자가 작업을 마치고 다른 작업자에게 컴퓨터를 넘겨주기 위해 자신의 쉘 세션만 종료하려고 한다. 실행 가능한 명령어 2가지를 작성하시오.",
+      "cwd": "~",
+      "steps": [
+        "exit|logout",
+        "logout|exit"
+      ]
+    },
+    {
+      "id": 69,
+      "prompt": "시스템을 예약 없이 즉시 종료하고 전원을 차단하는 단일 명령어를 작성하시오.",
+      "cwd": "~",
+      "steps": [
+        "sudo poweroff|sudo shutdown -h now|sudo shutdown -P now|sudo systemctl poweroff"
+      ]
+    },
+    {
+      "id": 70,
+      "prompt": "현재 디렉터리 및 하위 디렉터리에서 파일명이 test.txt인 파일을 검색하는 명령어를 작성하시오.",
+      "cwd": "~",
+      "steps": [
+        "find . -type f -name test.txt|find . -name test.txt -type f|find . -name test.txt"
+      ]
+    },
+    {
+      "id": 71,
+      "prompt": "홈 디렉터리 내에 있는 파일들 중 디렉터리가 아닌 일반 파일 형태의 항목만 검색하는 명령어를 작성하시오.",
+      "cwd": "~",
+      "steps": [
+        "find ~ -type f"
+      ]
+    },
+    {
+      "id": 72,
+      "prompt": "홈 디렉터리 내부에서 소유자가 me인 파일 및 디렉터리를 검색하는 명령어를 작성하시오.",
+      "cwd": "~",
+      "steps": [
+        "find ~ -user me"
+      ]
+    },
+    {
+      "id": 73,
+      "prompt": "홈 디렉터리의 속성(허가권, 소유권 등)을 유지한채 backup.tar 라는 하나의 아카이브 파일로 묶는 명령어를 작성하시오.",
+      "cwd": "/tmp",
+      "steps": [
+        "tar -cpf backup.tar -C /home student|tar -cf backup.tar -C /home student|tar -cpf backup.tar ~|tar -cf backup.tar ~"
+      ]
+    },
+    {
+      "id": 74,
+      "prompt": "위의 backup.tar 파일의 내용(포함된 파일 목록)을 풀지 않고 확인만 하는 명령어를 작성하시오.",
+      "cwd": "/tmp",
+      "steps": [
+        "tar -tf backup.tar"
+      ]
+    },
+    {
+      "id": 75,
+      "prompt": "위의 backup.tar 파일의 묶음을 풀어서 해제하는 명령어를 작성하시오.",
+      "cwd": "/tmp",
+      "steps": [
+        "tar -xf backup.tar|tar -xpf backup.tar"
+      ]
+    },
+    {
+      "id": 76,
+      "prompt": "backup.tar 파일은 용량이 원본과 거의 유사하므로, 용량을 줄이기 위해 .gz  확장자로 압축하는 명령어를 작성하시오.",
+      "cwd": "/tmp",
+      "steps": [
+        "gzip backup.tar"
+      ]
+    },
+    {
+      "id": 77,
+      "prompt": "홈디렉터리를 묶기와 압축을 동시에 수행하는 명령어를 작성하시오.",
+      "cwd": "/tmp",
+      "steps": [
+        "tar -czf home.tar.gz -C /home student|tar -czf home.tar.gz ~|tar -czf backup.tar.gz ~"
+      ]
+    },
+    {
+      "id": 78,
+      "prompt": "홈디렉터리를 하나의 아카이브 파일(home.tar)로 묶는 명령어를 작성하시오.",
+      "cwd": "/tmp",
+      "steps": [
+        "tar -cf home.tar -C /home student|tar -cf home.tar ~"
+      ]
+    },
+    {
+      "id": 79,
+      "prompt": "home.tar을 gzip 으로 압축하시오.",
+      "cwd": "/tmp",
+      "steps": [
+        "gzip home.tar"
+      ]
+    },
+    {
+      "id": 80,
+      "prompt": "윈도우(Windows)와 호환되며 원본 파일을 삭제하지 않고 아카이브와 압축을 동시에 진행하는 zip 명령어로 project 디렉터리를 project.zip으로 압축하는 명령어를 작성하시오.",
+      "cwd": "~",
+      "steps": [
+        "zip -r project.zip project"
+      ]
+    }
+  ]
+}
