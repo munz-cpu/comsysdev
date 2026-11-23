@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -21,6 +22,12 @@ public sealed class PracticeTerminal : MonoBehaviour
     private string directory = "~", previous;
     private bool focusPending, scrollPending;
     private const string StatsKey = "comsys.terminal.stats.v1.";
+    private const int StatusPageSize = 5;
+    private const string StatusHelp =
+        "예시 · status -aps g-w-c+ 1\n" +
+        "-a 답안 · -p 본문 · -s 정렬(g 스킵, w 오답, c 정답, i 번호)\n" +
+        "왼쪽 기준부터 정렬 · + 오름차순 / - 또는 생략 내림차순\n" +
+        "숫자 페이지(5문제) · -h 도움말";
 
     private void Start()
     {
@@ -70,6 +77,11 @@ public sealed class PracticeTerminal : MonoBehaviour
             SelectQuestion(command);
             return;
         }
+        if (command[0] == "status")
+        {
+            ShowStats(line.Split((char[])null, StringSplitOptions.RemoveEmptyEntries));
+            return;
+        }
         switch (line)
         {
             case "start":
@@ -79,16 +91,12 @@ public sealed class PracticeTerminal : MonoBehaviour
                 EndPractice();
                 Write("연습을 멈췄습니다. start 또는 solve <문제 번호>로 다시 시작하세요.");
                 return;
-            case "status":
-                ShowStats();
-                if (current != null) ShowQuestion();
-                return;
             case "giveup":
             case "next":
                 if (current == null) { Write("start 또는 solve <문제 번호>로 먼저 연습을 시작하세요."); return; }
                 Count("skip");
-                var solution = new StringBuilder("예시 답안");
-                for (int i = 0; i < current.steps.Length; i++) solution.Append("\n  " + current.Example(i));
+                var solution = new StringBuilder();
+                AppendExampleAnswers(solution, current, "");
                 Write(solution.ToString());
                 FinishQuestion();
                 return;
@@ -189,15 +197,16 @@ public sealed class PracticeTerminal : MonoBehaviour
         step = 0;
         previous = "";
         directory = current.cwd;
-        ShowQuestion();
+        Write(QuestionText());
         UpdatePrompt();
     }
 
-    private void ShowQuestion()
+    private string QuestionText()
     {
-        Write("\n[" + current.id.ToString("00") + " / " + bank.Length + "]  " + current.prompt);
-        if (step == 0) Write("시작 경로 " + current.cwd + "  ·  " + (current.id == 44 ? "project_106은 구성원이 없는 그룹입니다." : "문제에 필요한 실습 환경이 준비되어 있습니다."));
-        else Write(StepHint());
+        string hint = step == 0
+            ? "시작 경로 " + current.cwd + "  ·  " + (current.id == 44 ? "project_106은 구성원이 없는 그룹입니다." : "문제에 필요한 실습 환경이 준비되어 있습니다.")
+            : StepHint();
+        return "\n[" + current.id.ToString("00") + " / " + bank.Length + "]  " + current.prompt + "\n" + hint;
     }
 
     private void UpdatePrompt()
@@ -216,16 +225,165 @@ public sealed class PracticeTerminal : MonoBehaviour
         PlayerPrefs.Save();
     }
 
-    private void ShowStats()
+    private void ShowStats(string[] command)
     {
-        var result = new StringBuilder("문제별 누적 통계\n");
-        foreach (Exercise item in bank)
+        if (command.Length == 2 && command[1] is "-h" or "--help")
         {
-            string key = StatsKey + item.id + ".";
-            result.AppendFormat("\n{0:00}    정답 {1}    오답 {2}    건너뜀 {3}", item.id, PlayerPrefs.GetInt(key+"correct"), PlayerPrefs.GetInt(key+"wrong"), PlayerPrefs.GetInt(key+"skip"));
+            Write(StatusHelp);
+            return;
         }
+
+        int pageCount = Math.Max(1, (bank.Length + StatusPageSize - 1) / StatusPageSize);
+        int page = 0;
+        bool showQuestions = false;
+        bool showAnswers = false;
+        var sortKeys = new List<(string Key, bool Descending)>();
+        for (int i = 1; i < command.Length; i++)
+        {
+            switch (command[i])
+            {
+                case "-q":
+                case "--questions":
+                    showQuestions = true;
+                    break;
+                case var flags when flags.Length > 1 && flags[0] == '-' &&
+                    flags.Skip(1).All(flag => flag is 'a' or 'p' or 's') && flags.Distinct().Count() == flags.Length:
+                    showAnswers |= flags.Contains('a');
+                    showQuestions |= flags.Contains('p');
+                    if (!flags.Contains('s')) break;
+                    if (i + 1 == command.Length || command[i + 1][0] is not ('g' or 'w' or 'c' or 'i'))
+                    {
+                        Write("-s 뒤에 정렬 기준을 입력하세요.\n" + StatusHelp);
+                        return;
+                    }
+                    do
+                    {
+                        string criteria = command[++i];
+                        if (!TryParseStatusSortKeys(criteria, sortKeys))
+                        {
+                            Write("잘못된 정렬 기준 · " + criteria + "\n" + StatusHelp);
+                            return;
+                        }
+                    } while (i + 1 < command.Length && command[i + 1][0] is 'g' or 'w' or 'c' or 'i');
+                    break;
+                case var pageOption when page == 0 &&
+                    (int.TryParse(pageOption, out _) || (pageOption == "--page" && i + 1 < command.Length)):
+                    string pageNumber = pageOption == "--page" ? command[++i] : pageOption;
+                    if (!int.TryParse(pageNumber, out page) || page < 1 || page > pageCount)
+                    {
+                        Write("페이지 번호는 1~" + pageCount + " 사이여야 합니다.\n" + StatusHelp);
+                        return;
+                    }
+                    break;
+                case "--sort" when i + 1 < command.Length:
+                    foreach (string term in command[++i].Split(','))
+                    {
+                        string[] parts = term.Split(':');
+                        if (parts.Length != 2 || parts[1] is not ("asc" or "desc") ||
+                            !TryAddStatusSortKey(sortKeys, parts[0], parts[1] == "desc"))
+                        {
+                            Write("잘못된 정렬 기준 · " + term + "\n" + StatusHelp);
+                            return;
+                        }
+                    }
+                    break;
+                case var sortOption when sortOption.Length > 1 && sortOption[0] is '+' or '-' &&
+                    sortOption.Substring(1) is "id" or "correct" or "wrong" or "skip":
+                    if (!TryAddStatusSortKey(sortKeys, sortOption.Substring(1), sortOption[0] == '-'))
+                    {
+                        Write("잘못된 정렬 기준 · " + sortOption + "\n" + StatusHelp);
+                        return;
+                    }
+                    break;
+                default:
+                    Write("잘못된 status 옵션 · " + command[i] + "\n" + StatusHelp);
+                    return;
+            }
+        }
+
+        var rows = bank.Select(question =>
+        {
+            string key = StatsKey + question.id + ".";
+            return (Question: question, Correct: PlayerPrefs.GetInt(key + "correct"),
+                Wrong: PlayerPrefs.GetInt(key + "wrong"), Skip: PlayerPrefs.GetInt(key + "skip"));
+        }).ToArray();
+        Array.Sort(rows, (left, right) =>
+        {
+            foreach (var sortKey in sortKeys)
+            {
+                int comparison = sortKey.Key switch
+                {
+                    "correct" => left.Correct.CompareTo(right.Correct),
+                    "wrong" => left.Wrong.CompareTo(right.Wrong),
+                    "skip" => left.Skip.CompareTo(right.Skip),
+                    _ => left.Question.id.CompareTo(right.Question.id)
+                };
+                if (comparison != 0) return sortKey.Descending ? -comparison : comparison;
+            }
+            return left.Question.id.CompareTo(right.Question.id);
+        });
+
+        var result = new StringBuilder("문제별 누적 통계");
+        int start = page == 0 ? 0 : (page - 1) * StatusPageSize;
+        int end = page == 0 ? rows.Length : Math.Min(start + StatusPageSize, rows.Length);
+        if (page != 0) result.AppendFormat(" · 페이지 {0}/{1}", page, pageCount);
+        result.AppendLine();
+        for (int i = start; i < end; i++)
+        {
+            var row = rows[i];
+            result.AppendFormat("\n{0:00}    정답 {1}    오답 {2}    건너뜀 {3}",
+                row.Question.id, row.Correct, row.Wrong, row.Skip);
+            if (showQuestions) result.Append("\n  ").Append(row.Question.prompt);
+            if (showAnswers)
+            {
+                result.AppendLine();
+                AppendExampleAnswers(result, row.Question, "  ");
+            }
+            if (showQuestions || showAnswers) result.AppendLine();
+        }
+        if (current != null) result.AppendLine().Append(QuestionText());
+        result.Append("\n\n").Append(StatusHelp);
         Write(result.ToString());
-        Write("위로 스크롤해 이전 문제의 통계를 확인하세요.");
+    }
+
+    private static void AppendExampleAnswers(StringBuilder output, Exercise question, string indent)
+    {
+        output.Append(indent).Append("예시 답안");
+        for (int i = 0; i < question.steps.Length; i++)
+            output.Append('\n').Append(indent).Append("  ").Append(question.Example(i));
+    }
+
+    private static bool TryParseStatusSortKeys(string group, List<(string Key, bool Descending)> sortKeys)
+    {
+        int index = 0;
+        while (index < group.Length)
+        {
+            char option = group[index++];
+            string key = option switch
+            {
+                'g' => "skip",
+                'w' => "wrong",
+                'c' => "correct",
+                'i' => "id",
+                _ => null
+            };
+            if (key == null) return false;
+
+            bool descending = true;
+            if (index < group.Length && group[index] is '+' or '-')
+                descending = group[index++] == '-';
+            if (!TryAddStatusSortKey(sortKeys, key, descending)) return false;
+        }
+
+        return true;
+    }
+
+    private static bool TryAddStatusSortKey(List<(string Key, bool Descending)> sortKeys, string key, bool descending)
+    {
+        if (key is not ("id" or "correct" or "wrong" or "skip") || sortKeys.Any(sortKey => sortKey.Key == key))
+            return false;
+        sortKeys.Add((key, descending));
+        return true;
     }
 
     private void Write(string entry)

@@ -1057,7 +1057,7 @@ MonoBehaviour:
   m_MovementType: 2
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 36
+  m_ScrollSensitivity: 6
   m_Viewport: {fileID: 74000039}
 --- !u!1 &74000043
 GameObject:
